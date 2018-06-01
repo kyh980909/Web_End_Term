@@ -14,13 +14,8 @@
     <hr><br>
     <div class="Box">
         <div class="infoBox">
-            <div class="infoMenu" onclick="GameStart()">
-                <script>
-                    if(game.state)
-                        document.write("");
-                    else
-                        document.write("게임 시작");   
-                </script>
+            <div id="gameBt" class="infoMenu" onclick="GameStart()">
+                게임 시작
             </div>
             <div class="infoMenu">
                 <script>
@@ -32,12 +27,10 @@
                     document.write("실패수 : " + game.failCnt);
                 </script>
             </div>
-            <div class="infoMenu">
-                <script>
-                    document.write("시간 " + game.seeTime);
-                </script>
+            <div id="time" class="infoMenu">
+                시간 10
             </div>
-            <div class="infoMenu">
+            <div id="infoText" class="infoMenu">
                 게임이 진행될 <br> 예정입니다.
             </div>
         </div>
