@@ -118,7 +118,7 @@ function Click(eggNum) {   // 강아지 클릭 이벤트
                 failCheck = false;  // 찾았을 경우 failCheck에 false를 넣어서 failCnt가 올라가지 않게 함
                 game.leftDogs--;
                 document.getElementById("leftDogs").innerHTML="남은수 : " + game.leftDogs;
-                randNum[i] = 0;
+                randNum[i] = "egg" + randNum[i];
             }
         }
 
