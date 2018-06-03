@@ -4,12 +4,14 @@ game.leftTime = 20;     // 게임 시작 후 남은 시간
 game.leftDogs = 8;      // 남은 수
 game.failCnt = 0;       // 실패수
 game.state = false;     // 게임 시작 상태
+game.DogsPos = SetRandArr(); // 강아지의 랜덤한 위치를 저장 하는 배열
+game.success = false;   // 게임 성공 유무
 
-var DogImg = new Image();  // img 객체 생성
+var DogImg = new Image();   // img 객체 생성
 DogImg.src = "강아지.jpg";  // img객체의 소스 변경
 
 var EggImg = new Image();  // img 객체 생성
-EggImg.src = "달걀.jpg";  // img객체의 소스 변경
+EggImg.src = "달걀.jpg";   // img객체의 소스 변경
 
 function GameStart() {
     HideStartBt();
@@ -17,6 +19,7 @@ function GameStart() {
     SeeTime();
     var Delay = setTimeout(LeftTime, 10000);
     ChangeInfoText();
+    GameSuccessCheck();
 }
 
 function SetRandArr() {         // 난수 생성한 후 반환
@@ -49,7 +52,7 @@ function SetDogs() {        // 강아지 위치 설정
 
     var randNum = new Array(8);
 
-    randNum = SetRandArr(); // 난수 생성 함수를 호출 해서 randNum 배열에 저장
+    randNum = game.DogsPos; // 난수 생성 함수를 호출 해서 randNum 배열에 저장
 
     for(var k=0; k<8; k++)
     {
@@ -78,6 +81,7 @@ function SeeTime() {  // 게임 시작전 강아지의 위치를 보여줄 수 �
 }
 
 function LeftTime() {  // 게임 시작후 남은 시간의 변화를 보여주는 함수
+    game.state = true;
     var LeftGameTimerID = setInterval(LeftGameTime, 1000);
 
     function LeftGameTime() {
@@ -94,4 +98,50 @@ function ChangeInfoText() { // infoText 변경 함수
 
 function HideStartBt() {    // 게임시작을 한 후 게임시작 버튼을 숨기는 함수
     document.getElementById('gameBt').innerHTML="";
+}
+
+function Click(eggNum) {   // 강아지 클릭 이벤트
+
+    var failCheck = true;  // 강아지 찾기 실패 체크
+    var randNum = new Array(8);
+
+    if(game.state)         // 게임 시작 후에만 클릭 이벤트가 작동
+    {
+        randNum = game.DogsPos; // 난수 생성 함수를 호출 해서 randNum 배열에 저장
+
+        for(var i=0; i<8; i++)
+        {
+            if("egg" + randNum[i] == eggNum)
+            {
+                var myDogImg = document.getElementById("egg" + randNum[i]);
+                myDogImg.src = DogImg.src;
+                failCheck = false;  // 찾았을 경우 failCheck에 false를 넣어서 failCnt가 올라가지 않게 함
+                game.leftDogs--;
+                document.getElementById("leftDogs").innerHTML="남은수 : " + game.leftDogs;
+                randNum[i] = 0;
+            }
+        }
+
+        if (failCheck)      // 잘못 찾았을 경우에는 failCheck가 true이므로 failCnt 1증가
+        {
+            game.failCnt++;
+            document.getElementById('failCount').innerHTML="실패수 : " + game.failCnt;
+        }
+    }
+}
+
+function GameSuccessCheck() {   // 게임 성공 유무 체크
+    if(game.failCnt == 5)       // 5번 실패 했을 때
+        GameSuccess();          // 게임 종료 후 성공 유무 함수 호출
+}
+
+function GameSuccess() {     // 게임 성공 유무에 따른 결과 함수
+    if(game.success) // 게임에 성공 했을 때
+    {
+
+    }
+    else    // 게임 실패
+    {
+        alert("GameOver");
+    }
 }
