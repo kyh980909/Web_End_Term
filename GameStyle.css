@@ -40,3 +40,23 @@ h2 {
     margin-top: 5%;
     margin-bottom: 5%;
 }
+
+.GameOver {
+    position: fixed;
+    top: 30%;
+    left: 35%;
+    font-size: 100px;
+    color: red;
+    font-weight: bold;
+    display: none;
+}
+
+.GameSuccess {
+    position: fixed;
+    top: 30%;
+    left: 35%;
+    font-size: 100px;
+    color: aquamarine;
+    font-weight: bold;
+    display: none;
+}

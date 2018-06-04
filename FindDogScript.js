@@ -1,5 +1,5 @@
 var game = new Object();
-game.seeTime = 10;      // 게임 전 강아지를 볼 수 있는 시간
+game.seeTime = 5;      // 게임 전 강아지를 볼 수 있는 시간
 game.leftTime = 20;     // 게임 시작 후 남은 시간
 game.leftDogs = 8;      // 남은 수
 game.failCnt = 0;       // 실패수
@@ -7,8 +7,9 @@ game.state = false;     // 게임 시작 상태
 game.DogsPos = SetRandArr(); // 강아지의 랜덤한 위치를 저장 하는 배열
 game.success = false;   // 게임 성공 유무
 game.result;            // 게임 결과를 1초에 한번씩 확인 하기 위함
-game.infoChange = true;
-game.timeStop;
+game.infoChange = true; // 정보 텍스트를 변경 하는 변수
+game.timeStop;          // 시간을 멈추기 위한 변수
+game.end = true;               // 게임 끝을 알려주는 변수
 
 var DogImg = new Image();   // img 객체 생성
 DogImg.src = "강아지.jpg";  // img객체의 소스 변경
@@ -17,14 +18,14 @@ var EggImg = new Image();  // img 객체 생성
 EggImg.src = "달걀.jpg";   // img객체의 소스 변경
 
 function GameStart() {
+    valueInit();
     HideStartBt();
     SetDogs(); 
     SeeTime();
     ChangeInfoText();
-    var Delay = setTimeout(LeftTime, 10000);
-    var Sleep = setTimeout(ChangeInfoText, 10000);
-    game.result = setInterval(GameSuccessCheck, 1000);
-    //GameSuccessCheck();
+    var Delay = setTimeout(LeftTime, 5000);
+    var Sleep = setTimeout(ChangeInfoText, 5000);
+    game.result = setInterval(GameSuccessCheck, 100);
 }
 
 function SetRandArr() {         // 난수 생성한 후 반환
@@ -71,7 +72,7 @@ function SetDogs() {        // 강아지 위치 설정
             var myEggImg = document.getElementById("egg" + randNum[i]);
             myEggImg.src = EggImg.src;
         }
-    }, 10000);
+    }, 5000);
 }
 
 function SeeTime() {  // 게임 시작전 강아지의 위치를 보여줄 수 있는 남은 시간의 변화를 보여주는 함수
@@ -82,7 +83,7 @@ function SeeTime() {  // 게임 시작전 강아지의 위치를 보여줄 수 �
         if(game.seeTime < 1)
             clearInterval(LeftSeeTimerID);
         
-        document.getElementById('time').innerHTML="시간 " + game.seeTime;       
+        document.getElementById('time').innerHTML="시간 : " + game.seeTime;       
     }
 }
 
@@ -109,7 +110,10 @@ function ChangeInfoText() { // infoText 변경 함수
 }
 
 function HideStartBt() {    // 게임시작을 한 후 게임시작 버튼을 숨기는 함수
-    document.getElementById('gameBt').innerHTML="";
+    if(game.end)
+        document.getElementById('gameBt').innerHTML="";
+    else
+        document.getElementById('gameBt').innerHTML="게임 시작";
 }
 
 function Click(eggNum) {   // 강아지 클릭 이벤트
@@ -117,38 +121,42 @@ function Click(eggNum) {   // 강아지 클릭 이벤트
     var failCheck = true;  // 강아지 찾기 실패 체크
     var randNum = new Array(8);
 
-    if(game.state)         // 게임 시작 후에만 클릭 이벤트가 작동
+    if(game.end)               // 게임이 진행중 일때 game.end는 true로 초기화 해놓았기 때문에 사용가능 게임 끝났을 때 game.end에 false를 넣어서 Click이벤트 비활성화
     {
-        randNum = game.DogsPos; // 난수 생성 함수를 호출 해서 randNum 배열에 저장
-
-        for(var i=0; i<8; i++)
+        if(game.state)         // 게임 시작 후에만 클릭 이벤트가 작동
         {
-            if("egg" + randNum[i] == eggNum)
+            randNum = game.DogsPos; // 난수 생성 함수를 호출 해서 randNum 배열에 저장
+
+            for(var i=0; i<8; i++)
             {
-                var myDogImg = document.getElementById("egg" + randNum[i]);
-                myDogImg.src = DogImg.src;
-                failCheck = false;  // 찾았을 경우 failCheck에 false를 넣어서 failCnt가 올라가지 않게 함
-                game.leftDogs--;
-                document.getElementById("leftDogs").innerHTML="남은수 : " + game.leftDogs;
-                randNum[i] = "egg" + randNum[i];
+                if("egg" + randNum[i] == eggNum)
+                {
+                    var myDogImg = document.getElementById("egg" + randNum[i]);
+                    myDogImg.src = DogImg.src;
+                    failCheck = false;  // 찾았을 경우 failCheck에 false를 넣어서 failCnt가 올라가지 않게 함
+                    game.leftDogs--;
+                    document.getElementById("leftDogs").innerHTML="남은수 : " + game.leftDogs;
+                    randNum[i] = "egg" + randNum[i];
+                }
             }
-        }
 
-        if (failCheck)      // 잘못 찾았을 경우에는 failCheck가 true이므로 failCnt 1증가
-        {
-            game.failCnt++;
-            document.getElementById('failCount').innerHTML="실패수 : " + game.failCnt;
+            if (failCheck)      // 잘못 찾았을 경우에는 failCheck가 true이므로 failCnt 1증가
+            {
+                game.failCnt++;
+                document.getElementById('failCount').innerHTML="실패수 : " + game.failCnt;
+            }     
         }
     }
 }
 
 function GameSuccessCheck() {   // 게임 성공 유무 체크
-    if(game.failCnt == 5 || game.leftTime == 0)       // 5번 실패 하거나 시간이 다 되었을 때
+    if(game.failCnt > 4 || game.leftTime == 0)       // 5번 실패 하거나 시간이 다 되었을 때
     {
         clearInterval(game.result);
         GameSuccess();          // 게임 종료 후 성공 유무 함수 호출
     }
-    if(game.leftTime > 0 && game.leftDogs == 0)
+
+    if(game.failCnt < 5 && game.leftTime > 0 && game.leftDogs == 0)
     {
         game.success = true;
         clearInterval(game.result);
@@ -160,11 +168,42 @@ function GameSuccess() {     // 게임 성공 유무에 따른 결과 함수
     if(game.success) // 게임에 성공 했을 때
     {
         clearInterval(game.timeStop);
-        alert("GameSuccess");
+        game.end = false;
+        document.getElementById('GameSuccess').style.display = "flex";
+        HideStartBt();
     }
     else    // 게임 실패
     {
+        game.end = false;
         clearInterval(game.timeStop);
-        alert("GameOver");
+        document.getElementById('GameOver').style.display = "flex";
+        HideStartBt();
+    }
+}
+
+function valueInit() {      // 게임 값들 초기화 함수
+    game.seeTime = 5;       // 게임 전 강아지를 볼 수 있는 시간
+    game.leftTime = 20;     // 게임 시작 후 남은 시간
+    game.leftDogs = 8;      // 남은 수
+    game.failCnt = 0;       // 실패수
+    game.state = false;     // 게임 시작 상태
+    game.DogsPos = SetRandArr(); // 강아지의 랜덤한 위치를 저장 하는 배열
+    game.success = false;   // 게임 성공 유무
+    game.result;            // 게임 결과를 1초에 한번씩 확인 하기 위함
+    game.infoChange = true; // 정보 텍스트를 변경 하는 변수
+    game.timeStop;          // 시간을 멈추기 위한 변수
+    game.end = true;        // 게임 끝을 알려주는 변수
+    imgReset();
+    document.getElementById('GameSuccess').style.display = "none";
+    document.getElementById('GameOver').style.display = "none"
+    document.getElementById('failCount').innerHTML="실패수 : " + game.failCnt;
+    document.getElementById("leftDogs").innerHTML="남은수 : " + game.leftDogs;
+}
+
+function imgReset() {
+    for(i=1; i<25; i++)
+    {
+        var myEggImg = document.getElementById("egg" + i);
+        myEggImg.src = EggImg.src;
     }
 }
