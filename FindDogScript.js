@@ -6,6 +6,9 @@ game.failCnt = 0;       // 실패수
 game.state = false;     // 게임 시작 상태
 game.DogsPos = SetRandArr(); // 강아지의 랜덤한 위치를 저장 하는 배열
 game.success = false;   // 게임 성공 유무
+game.result;            // 게임 결과를 1초에 한번씩 확인 하기 위함
+game.infoChange = true;
+game.timeStop;
 
 var DogImg = new Image();   // img 객체 생성
 DogImg.src = "강아지.jpg";  // img객체의 소스 변경
@@ -17,9 +20,11 @@ function GameStart() {
     HideStartBt();
     SetDogs(); 
     SeeTime();
-    var Delay = setTimeout(LeftTime, 10000);
     ChangeInfoText();
-    GameSuccessCheck();
+    var Delay = setTimeout(LeftTime, 10000);
+    var Sleep = setTimeout(ChangeInfoText, 10000);
+    game.result = setInterval(GameSuccessCheck, 1000);
+    //GameSuccessCheck();
 }
 
 function SetRandArr() {         // 난수 생성한 후 반환
@@ -73,27 +78,34 @@ function SeeTime() {  // 게임 시작전 강아지의 위치를 보여줄 수 �
     var LeftSeeTimerID = setInterval(LeftSeeTime, 1000);
 
     function LeftSeeTime() {
-        if(game.seeTime < 2)
-            clearInterval(LeftSeeTimerID);
         game.seeTime -= 1;
+        if(game.seeTime < 1)
+            clearInterval(LeftSeeTimerID);
+        
         document.getElementById('time').innerHTML="시간 " + game.seeTime;       
     }
 }
 
 function LeftTime() {  // 게임 시작후 남은 시간의 변화를 보여주는 함수
     game.state = true;
-    var LeftGameTimerID = setInterval(LeftGameTime, 1000);
+    game.timeStop = setInterval(LeftGameTime, 1000);
 
     function LeftGameTime() {
-        if(game.leftTime < 2)
-            clearInterval(LeftGameTimerID);
         game.leftTime -= 1;
-        document.getElementById('time').innerHTML="시간 " + game.leftTime;       
+        if(game.leftTime < 1)
+            clearInterval(game.timeStop);
+        
+        document.getElementById('time').innerHTML="남은 시간 : " + game.leftTime;       
     }
 }
 
 function ChangeInfoText() { // infoText 변경 함수
-    document.getElementById('infoText').innerHTML="숨은 그림을 보세요";
+    if(game.infoChange){
+        document.getElementById('infoText').innerHTML="숨은 그림을 보세요";
+        game.infoChange = false;
+    }
+    else
+        document.getElementById('infoText').innerHTML="강아지를 찾으세요";
 }
 
 function HideStartBt() {    // 게임시작을 한 후 게임시작 버튼을 숨기는 함수
@@ -131,17 +143,28 @@ function Click(eggNum) {   // 강아지 클릭 이벤트
 }
 
 function GameSuccessCheck() {   // 게임 성공 유무 체크
-    if(game.failCnt == 5)       // 5번 실패 했을 때
+    if(game.failCnt == 5 || game.leftTime == 0)       // 5번 실패 하거나 시간이 다 되었을 때
+    {
+        clearInterval(game.result);
         GameSuccess();          // 게임 종료 후 성공 유무 함수 호출
+    }
+    if(game.leftTime > 0 && game.leftDogs == 0)
+    {
+        game.success = true;
+        clearInterval(game.result);
+        GameSuccess();
+    }
 }
 
 function GameSuccess() {     // 게임 성공 유무에 따른 결과 함수
     if(game.success) // 게임에 성공 했을 때
     {
-
+        clearInterval(game.timeStop);
+        alert("GameSuccess");
     }
     else    // 게임 실패
     {
+        clearInterval(game.timeStop);
         alert("GameOver");
     }
 }
