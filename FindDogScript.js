@@ -17,9 +17,12 @@ DogImg.src = "강아지.jpg";  // img객체의 소스 변경
 var EggImg = new Image();  // img 객체 생성
 EggImg.src = "달걀.jpg";   // img객체의 소스 변경
 
+var audio = new Audio('bgm.mp3');
+
 function GameStart() {
     valueInit();
     HideStartBt();
+    audio.play();
     SetDogs(); 
     SeeTime();
     ChangeInfoText();
@@ -177,7 +180,9 @@ function GameSuccess() {     // 게임 성공 유무에 따른 결과 함수
         game.end = false;
         clearInterval(game.timeStop);
         document.getElementById('GameOver').style.display = "flex";
+        seeDogs();
         HideStartBt();
+        //audio.pause();
     }
 }
 
@@ -198,6 +203,12 @@ function valueInit() {      // 게임 값들 초기화 함수
     document.getElementById('GameOver').style.display = "none"
     document.getElementById('failCount').innerHTML="실패수 : " + game.failCnt;
     document.getElementById("leftDogs").innerHTML="남은수 : " + game.leftDogs;
+    
+    for(var i=1; i<25; i++)
+    {
+        document.getElementById("egg" + i).style.border = "none";
+        document.getElementById("egg" + i).style.borderColor = "none";   
+    }
 }
 
 function imgReset() {
@@ -205,5 +216,19 @@ function imgReset() {
     {
         var myEggImg = document.getElementById("egg" + i);
         myEggImg.src = EggImg.src;
+    }
+}
+
+function seeDogs() { // 실패시 못찾은 강아지 표시
+    
+    for(var i=0; i<8; i++)
+    {
+        if(game.DogsPos[i] > 0 && game.DogsPos[i] < 25 )
+        {
+            var seedogs = document.getElementById("egg" + game.DogsPos[i]);
+            seedogs.src = DogImg.src;
+            document.getElementById("egg" + game.DogsPos[i]).style.border = "solid";
+            document.getElementById("egg" + game.DogsPos[i]).style.borderColor = "red";
+        }
     }
 }
