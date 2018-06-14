@@ -121,7 +121,8 @@ function HideStartBt() {    // 게임시작을 한 후 게임시작 버튼을 �
 
 function Click(eggNum) {   // 강아지 클릭 이벤트
 
-    var failCheck = true;  // 강아지 찾기 실패 체크
+    var failCheck1 = true;  // 강아지 찾기 실패 체크 
+    var failCheck2 = true;  // 찾은 강아지를 클릭했을 때 실패 안올라가게 판별할 변수
     var randNum = new Array(8);
 
     if(game.end)               // 게임이 진행중 일때 game.end는 true로 초기화 해놓았기 때문에 사용가능 게임 끝났을 때 game.end에 false를 넣어서 Click이벤트 비활성화
@@ -136,18 +137,25 @@ function Click(eggNum) {   // 강아지 클릭 이벤트
                 {
                     var myDogImg = document.getElementById("egg" + randNum[i]);
                     myDogImg.src = DogImg.src;
-                    failCheck = false;  // 찾았을 경우 failCheck에 false를 넣어서 failCnt가 올라가지 않게 함
+                    failCheck1 = false;  // 찾았을 경우 failCheck에 false를 넣어서 failCnt가 올라가지 않게 함
                     game.leftDogs--;
                     document.getElementById("leftDogs").innerHTML="남은수 : " + game.leftDogs;
                     randNum[i] = "egg" + randNum[i];
                 }
             }
 
-            if (failCheck)      // 잘못 찾았을 경우에는 failCheck가 true이므로 failCnt 1증가
+            for(var i=0; i<8; i++)              // 찾은 강아지를 눌렀을 때 failcnt 안올라가게 체크
+            {
+                if (randNum[i] == eggNum)
+                {
+                    failCheck2 = false;
+                }
+            }     
+            if (failCheck1 && failCheck2)      // 잘못 찾았을 경우에는 failCheck가 true이므로 failCnt 1증가
             {
                 game.failCnt++;
                 document.getElementById('failCount').innerHTML="실패수 : " + game.failCnt;
-            }     
+            }
         }
     }
 }
