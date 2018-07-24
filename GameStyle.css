@@ -1,9 +1,9 @@
 body {
-    background-color: rgb(39, 66, 39);
+    background-color: bisque;
 }
 
 h2 {
-    color: aliceblue;
+    color: rgb(63, 98, 129);
     text-align: center;
 }
 
@@ -19,12 +19,12 @@ h2 {
 }
 
 .infoMenu {
-    background-color: pink;
-    margin-bottom: 5%;
+    background-color: rgb(220, 223, 207);
+    margin-bottom: 10%;
 }
 
 .game {
-    background-color : rgb(90, 124, 39);
+    background-color : rgb(214, 229, 190);
     float: right;
     width:84%;
     height: 50%;
@@ -56,7 +56,7 @@ h2 {
     top: 30%;
     left: 35%;
     font-size: 100px;
-    color: aquamarine;
+    color: rgb(43, 84, 92);
     font-weight: bold;
     display: none;
 }
